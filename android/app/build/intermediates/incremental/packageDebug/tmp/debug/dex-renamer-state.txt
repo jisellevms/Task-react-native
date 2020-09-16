@@ -1,0 +1,4 @@
+#Tue Sep 15 23:03:38 BRT 2020
+base.0=/home/jiselle/Documentos/React-native/Tasks-react-native/android/app/build/intermediates/transforms/dexMerger/debug/0
+path.0=classes.dex
+renamed.0=classes.dex
