@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "/home/jiselle/Documentos/React-native/Tasks-react-native/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-v21/values-v21.xml",
+            "outputFile": "/home/jiselle/Documentos/ESTUDOS/tasks/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-v21/values-v21.xml",
             "map": [
                 {
                     "source": "/home/jiselle/.gradle/caches/transforms-2/files-2.1/acbbc28493f791224159e07b9c7c7b4b/res/values-v21/values-v21.xml",
