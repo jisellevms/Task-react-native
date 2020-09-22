@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "/home/jiselle/Documentos/ESTUDOS/tasks/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-hdpi-v4/values-hdpi-v4.xml",
+            "outputFile": "/home/jiselle/Documentos/React-native/Tasks-react-native/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-hdpi-v4/values-hdpi-v4.xml",
             "map": [
                 {
                     "source": "/home/jiselle/.gradle/caches/transforms-2/files-2.1/90fc2a2418f979042e0c63316badb385/res/values-hdpi-v4/values-hdpi-v4.xml",
