@@ -6,12 +6,12 @@ import {
     StyleSheet,
     TouchableWithoutFeedback,
     TextInput,
-    TouchableOpacity
+    TouchableOpacity, Platform
 } from 'react-native';
 import commonStyles from '../commonStyles';
 import DateTimePicker from '@react-native-community/datetimepicker'
-
-const initialState = { desc: '', date: new Date() }
+import moment from 'moment';
+const initialState = { desc: '', date: new Date(), showDatePicker: false }
 
 export default class AddTask extends Component {
     state = {
@@ -19,10 +19,29 @@ export default class AddTask extends Component {
     }
 
     getDateTimePicker = () => {
-        return <DateTimePicker
+        let datePicker = <DateTimePicker
             value={this.state.date}
-            onChange={(_, date) => this.setState({ date })} 
-            mode='date'/>
+            onChange={(_, date) => this.setState({ date, showDatePicker: false })}
+            mode='date' />
+
+        const dateString = moment(this.state.date).format('dddd, D [de] MMMM [de] YYYY')
+
+        if (Platform.OS === 'android') {
+            datePicker = (
+                <View>
+                    <TouchableOpacity onPress={() => this.setState({ showDatePicker: true})}>
+                        <Text style={style.date}>
+                            {dateString}
+                        </Text>
+                    </TouchableOpacity>
+                    {this.state.showDatePicker && datePicker}
+                </View>
+            )
+        } else {
+
+        }
+
+        return datePicker;
     }
 
     render() {
@@ -43,7 +62,7 @@ export default class AddTask extends Component {
                         placeholder="Informe a descrição..."
                         value={this.state.desc}
                         onChangeText={desc => this.setState({ desc })} />
-                        {this.getDateTimePicker()}
+                    {this.getDateTimePicker()}
                     <View style={style.buttons}>
                         <TouchableOpacity onPress={this.props.onCancel}>
                             <Text style={style.button}>Cancelar</Text>
@@ -97,5 +116,10 @@ const style = StyleSheet.create({
         margin: 20,
         marginRight: 30,
         color: commonStyles.colors.today
+    },
+    date:{
+        fontFamily: commonStyles.fontFamily,
+        fontSize: 18,
+        marginLeft: 15
     }
 })
