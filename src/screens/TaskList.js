@@ -1,5 +1,14 @@
 import React, { Component } from 'react';
-import { View, Text, ImageBackground, StyleSheet, FlatList, TouchableOpacity, Platform } from 'react-native';
+import {
+    View,
+    Text,
+    ImageBackground,
+    StyleSheet,
+    FlatList,
+    TouchableOpacity,
+    Platform,
+    Alert
+} from 'react-native';
 
 import commonStyles from '../commonStyles';
 import todayImage from '../../assets/assets/imgs/today.jpg';
@@ -8,29 +17,48 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import moment from 'moment';
 import 'moment/locale/pt-br';
 import AddTask from './AddTask';
+import AsyncStorage from '@react-native-community/async-storage';
+
+const initialState = {
+    showDoneTasks: true,
+    visibleTasks: [],
+    showAddTask: false,
+    tasks: [],
+}
+
 
 export default class TaskList extends Component {
 
     state = {
-        showDoneTasks: true,
-        visibleTasks: [],
-        showAddTask: false,
-        tasks: [{
-            id: Math.random(),
-            desc: 'Comprar livro Clean Code',
-            estimateAt: new Date(),
-            doneAt: new Date()
-        },
-        {
-            id: Math.random(),
-            desc: 'Ler livro Clean Code',
-            estimateAt: new Date(),
-            doneAt: null
-        }],
+        ...initialState
     }
 
-    componentDidMount = () => {
-        this.filterTasks()
+    addTask = newTask => {
+        if (!newTask.desc || !newTask.desc.trim()) {
+            Alert.alert('Dados inválidos', 'Descrição não informada!')
+            return;
+        }
+
+        const tasks = [...this.state.tasks]
+        tasks.push({
+            id: Math.random(),
+            desc: newTask.desc,
+            estimateAt: newTask.date,
+            doneAt: null
+        });
+
+        this.setState({ tasks, showAddTask: false }, this.filterTasks)
+    }
+
+    deleteTask = id => {
+        const tasks = this.state.tasks.filter(task => task.id !== id);
+        this.setState({ tasks }, this.filterTasks)
+    }
+
+    componentDidMount = async () => {
+        const stateString = await AsyncStorage.getItem('tasksState');
+        const state = JSON.parse(stateString) || initialState
+        this.setState(state, this.filterTasks)
     }
 
     toggleFilter = () => {
@@ -46,6 +74,7 @@ export default class TaskList extends Component {
             visibleTasks = this.state.tasks.filter(pending)
         }
         this.setState({ visibleTasks })
+        AsyncStorage.setItem('tasksState', JSON.stringify(this.state))
     }
 
     toggleTask = taskId => {
@@ -64,7 +93,8 @@ export default class TaskList extends Component {
         return (
             <View style={styles.container}>
                 <AddTask isVisible={this.state.showAddTask}
-                    onCancel={() => this.setState({ showAddTask: false})} />
+                    onCancel={() => this.setState({ showAddTask: false })}
+                    onSave={this.addTask} />
                 <ImageBackground source={todayImage}
                     style={styles.background}>
                     <View style={styles.iconBar}>
@@ -84,13 +114,13 @@ export default class TaskList extends Component {
                     <FlatList
                         data={this.state.visibleTasks}
                         keyExtractor={item => `${item.id}`}
-                        renderItem={({ item }) => <Task {...item} toggleTask={this.toggleTask} />} />
+                        renderItem={({ item }) => <Task {...item} onToggleTask={this.toggleTask} onDelete={this.deleteTask} />} />
                 </View>
                 <TouchableOpacity style={styles.addButton}
-                activeOpacity={0.7}
-                onPress={() => this.setState({showAddTask: true})}>
-                    <Icon name="plus" size={20} 
-                    color={commonStyles.colors.secondary}/>
+                    activeOpacity={0.7}
+                    onPress={() => this.setState({ showAddTask: true })}>
+                    <Icon name="plus" size={20}
+                        color={commonStyles.colors.secondary} />
                 </TouchableOpacity>
             </View>
         );
@@ -131,7 +161,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         marginTop: Platform.OS === 'ios' ? 40 : 10
     },
-    addButton:{
+    addButton: {
         position: 'absolute',
         right: 30,
         bottom: 30,
